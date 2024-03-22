@@ -21,9 +21,9 @@ URL = input('>>\n')
 if 'playlist' in URL:
     # assign playlist
     playlist = Playlist(URL)
-    print(f'Downloading: {playlist.title}')
+    print(f'Downloading Playlist: {playlist.title}')
     print('Number of Musics: %s' % len(playlist.video_urls))
-    artist = playlist.title.split(' ')[0]
+    playlist_name = playlist.title.split(' ')[0]
 
     # get all urls from playlist
     for url in playlist:
@@ -34,19 +34,36 @@ if 'playlist' in URL:
         print(f'Starting Download... {yt.title}')
         music = yt.streams.filter(only_audio=True)
 
-        # tenta criar uma pasta com o titulo da playlist
+        path = f'{PATH}\\{playlist_name}'
+
+        # try create a directory with the playlist name
         try:
-            new_dir = f'{PATH}\{artist}'
-            path = os.mkdir(new_dir)
+            path = os.mkdir(path)
             download_music(music, path)
             
         except FileExistsError:
-            path = f'{PATH}\{artist}'
-            download_music(music, path)
+            choice = input("You already downloaded this playlist, want to continue? y/n \n")
+            if choice == 'y':
+                download_music(music, path)
+            else:
+                break
 
     
 
-# se for uma musica
+# if is only 1 music
 else:
-    pass
+    #URL
+    yt = YouTube(str(URL))
+    music = yt.streams.filter(only_audio=True)
+    music_name = yt.title.split(' ')[0]
+
+    path = PATH
+
+    print(f'Downloading.... {music_name} - {yt.author}')
+    out_file = music[0].download(path)
+    base, ext = os.path.splitext(out_file)
+    new_file = f'{music_name} - {yt.author}' + '.mp3'
+    os.rename(out_file, new_file)
+    print(yt.title + 'Downloaded!')
+    print(f'{music_name} - {yt.author} has been downloaded!')
 
