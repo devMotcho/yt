@@ -1,1 +1,3 @@
 pytubefix
+ffmpeg-python
+certifi
